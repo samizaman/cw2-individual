@@ -1,3 +1,28 @@
+// Import dependencies modules
+const express = require('express');
+const MongoClient = require('mongodb').MongoClient;
+require('dotenv').config();
+
+// Create an express.js instance
+const app = express();
+const port = process.env.PORT;
+const connection_string = process.env.CONNECTION_STRING
+
+// config Express.js
+app.use(express.json());
+app.set('port', port);
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    next();
+});
+
+// connect to MongoDB
+let db;
+
+MongoClient.connect(connection_string, (err, client) => {
+    db = client.db('coach');
+})
+
 let products = [{
     id: 1001,
     subject: "Art and Craft",
