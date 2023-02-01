@@ -1,1 +1,1 @@
-# cst3145-cw2-individual
+# CST3145 Coursework 2 Individual
