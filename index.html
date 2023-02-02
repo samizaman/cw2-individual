@@ -7,9 +7,6 @@
   <!-- Link to stylesheet -->
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Link to JS -->
-  <script src="js/products.js"></script>
-
   <!-- Link to Font Awesome library  -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
@@ -26,8 +23,8 @@
 
 
 <body>
-  <!-- Start of Navbar -->
   <div id="app">
+    <!-- Start of Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light shadow bg-light container-fluid">
       <div class="container-fluid mb-2">
         <a class="navbar-brand">COACH</a>
@@ -50,7 +47,7 @@
     </nav>
     <!-- End of Navbar -->
 
-    <div v-if="showProduct">
+    <div v-if="showLesson">
 
       <div class="row">
         <div class="col-2">
@@ -96,9 +93,9 @@
               </label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="sort" id="subject" value="subject" v-model="sortBy">
-              <label class="form-check-label" for="subject">
-                Subject
+              <input class="form-check-input" type="radio" name="sort" id="topic" value="topic" v-model="sortBy">
+              <label class="form-check-label" for="topic">
+                Topic
               </label>
             </div>
             <!-- End of Sort -->
@@ -109,37 +106,36 @@
         <div class="col-10">
           <div class="container mt-4">
 
-
             <h4>RESULTS</h4>
-            <!-- Start of Product Cards -->
-            <div v-for="product in searchAndSortProducts" class="d-inline-block p-2">
+            <!-- Start of Lesson Cards -->
+            <div v-for="lesson in searchAndSortLessons" class="d-inline-block p-2">
 
               <div class="row mx-auto">
                 <div class="card text-center">
                   <figure>
-                    <!-- bind the 'src' attribute to the 'product.image' in 'data' -->
-                    <img :src="product.image" alt="product-image" width="200" height="220">
+                    <!-- bind the 'src' attribute to the 'lesson.image' in 'data' -->
+                    <img :src="lesson.image" alt="lesson-image" width="200" height="220">
                   </figure>
                   <div class="card-body">
-                    <h5 class="card-title text-center" v-text="product.subject"></h5>
+                    <h5 class="card-title text-center">{{ lesson.topic }}</h5>
 
-                    <p class="card-text text-center text-muted">{{product.location}}</p>
-                    <p class="card-text">Price: £ {{product.price}}</p>
-                    <p class="card-text">Space: {{product.space}}</p>
+                    <p class="card-text text-center text-muted">{{lesson.location}}</p>
+                    <p class="card-text">Price: £ {{lesson.price}}</p>
+                    <p class="card-text">Space: {{lesson.space}}</p>
 
-                    <button class="btn btn-warning" @click="addToCart(product)" v-if="canAddToCart(product)">
+                    <button class="btn btn-warning" @click="addToCart(lesson)" v-if="canAddToCart(lesson)">
                       Add to Cart
                     </button>
                     <button class="btn btn-warning" disabled="disabled" v-else>Add to Cart</button>
                     <div class="mt-2">
-                      <span v-for="n in product.rating"><i class="fa-solid fa-star"></i></span>
-                      <span v-for="n in 5 - product.rating"><i class="fa-regular fa-star"></i></span>
+                      <span v-for="n in lesson.rating"><i class="fa-solid fa-star"></i></span>
+                      <span v-for="n in 5 - lesson.rating"><i class="fa-regular fa-star"></i></span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- End of Product Cards -->
+            <!-- End of Lesson Cards -->
           </div>
         </div>
       </div>
@@ -246,26 +242,26 @@
                     <hr class="my-2">
                   </div>
                   <div class="card-body pt-0">
-                    <div class="row  justify-content-between" v-for="product in cart">
+                    <div class="row  justify-content-between" v-for="lesson in cart">
                       <div class="col-auto col-md-7">
                         <div class="media flex-column flex-sm-row">
-                          <img class=" img-fluid" :src="product.image" width="62" height="62">
+                          <img class=" img-fluid" :src="lesson.image" width="62" height="62">
                           <div class="media-body  my-auto">
                             <div class="row ">
                               <div class="col-auto">
-                                <p class="mb-0"><b>{{product.subject}}</b></p>
-                                <small class="text-muted">{{product.location}}</small>
+                                <p class="mb-0"><b>{{lesson.topic}}</b></p>
+                                <small class="text-muted">{{lesson.location}}</small>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
                       <div class=" pl-0 flex-sm-col col-auto  my-auto">
-                        <button type="button" v-on:click="removeFromCart(product)" class="btn btn-danger"><span
+                        <button type="button" v-on:click="removeFromCart(lesson)" class="btn btn-danger"><span
                             class="fa-solid fa-trash-can"></span></button>
                       </div>
                       <div class=" pl-0 flex-sm-col col-auto  my-auto ">
-                        <p><b>£ {{product.price}}</b></p>
+                        <p><b>£ {{lesson.price}}</b></p>
                       </div>
                       <hr class="my-2">
                     </div>
@@ -316,11 +312,9 @@
       el: "#app",
       data: () => {
         return {
-          // The first 'products' is a Vue instance/property
-          // The second 'products' is an array from products.js
-          products: products,
+          lessons: [],
           cart: [], // array to store items in shopping cart
-          showProduct: true,
+          showLesson: true,
           sortBy: "",
           sortDirection: "",
           searchInput: "",
@@ -329,50 +323,65 @@
           name: "",
         };
       },
+      created: function () {
+        console.log("Requesting data from server...");
+
+        fetch('http://localhost:3000/collection/lessons')
+          .then(response => response.json())
+          .then(lessons => {
+            this.lessons = lessons
+            console.log("Data received from server: ", lessons);
+
+          })
+          .catch(error => {
+            console.error(error)
+          })
+
+      },
       methods: {
         validateCart() {
           return this.cart.length > 0;
         },
-        // pushes product to the cart array and subtracts one space
-        addToCart(product) {
-          this.cart.push(product); // pushing product id to the cart array
-          this.products.forEach((item) => {
-            if (item.id === product.id) {
+        // pushes lesson to the cart array and subtracts one space
+        addToCart(lesson) {
+          this.cart.push(lesson); // pushing lesson id to the cart array
+          this.lessons.forEach((item) => {
+            if (item.id === lesson.id) {
               item.space -= 1;
             }
           });
           console.log(this.cart);
         },
-        // if showCheckout returns true it shows the products if its false it shows checkout
+        // if showCheckout returns true it shows the lessons if its false it shows checkout
         showCheckout() {
-          this.showProduct = !this.showProduct && this.cart.length > 0;
+          this.showLesson = !this.showLesson && this.cart.length > 0;
         },
 
         // Submits the form and resets to fresh homepage
         submitForm() {
           alert("Order Submitted");
           this.cart = [];
-          this.showProduct = true;
+          this.showLesson = true;
           this.sortBy = "";
           this.sortDirection = "";
           this.searchInput = "";
         },
-        // removes one product from the cart array and adds one space
-        removeFromCart(product) {
-          const index = this.cart.indexOf(product);
+        // removes one lesson from the cart array and adds one space
+        removeFromCart(lesson) {
+          const index = this.cart.indexOf(lesson);
           if (index >= 0) {
             this.cart.splice(index, 1);
           }
-          this.products.forEach((item) => {
-            if (item.id === product.id) {
+          this.lessons.forEach((item) => {
+            if (item.id === lesson.id) {
               item.space += 1;
             }
           });
           console.log(this.cart.length);
         },
         // checks whether we are able to add items to the cart based on what's there in our available inventory 
-        canAddToCart(product) {
-          return product.space > 0;
+        canAddToCart(lesson) {
+          return lesson.space > 0;
         },
       },
       computed: {
@@ -384,27 +393,27 @@
         },
 
         cartItemCount: function () {
-          console.log("cartItemCount");
+          console.log(this.cart.length + " items in cart");
           return this.cart.length || "";
         },
 
-        searchAndSortProducts() {
-          // If search input is present, filter products by search input
+        searchAndSortLessons() {
+          // If search input is present, filter lessons by search input
           if (this.searchInput) {
-            return this.products.filter(product => {
-              const subjectMatch = product.subject.toLowerCase().includes(this.searchInput.toLowerCase());
-              const locationMatch = product.location.toLowerCase().includes(this.searchInput.toLowerCase());
+            return this.lessons.filter(lesson => {
+              const topicMatch = lesson.topic.toLowerCase().includes(this.searchInput.toLowerCase());
+              const locationMatch = lesson.location.toLowerCase().includes(this.searchInput.toLowerCase());
 
-              return subjectMatch || locationMatch;
+              return topicMatch || locationMatch;
             });
           }
           // localeCompare() method compares two strings in the current locale
           // returns sort order -1, 1, or 0 (for before, after, or equal).
           // Map sorting functions based on sortBy and sortDirection
           const sortFunctions = {
-            subject: {
-              ascending: (a, b) => a.subject.localeCompare(b.subject),
-              descending: (a, b) => b.subject.localeCompare(a.subject),
+            topic: {
+              ascending: (a, b) => a.topic.localeCompare(b.topic),
+              descending: (a, b) => b.topic.localeCompare(a.topic),
             },
             price: {
               ascending: (a, b) => a.price - b.price,
@@ -422,13 +431,13 @@
 
           const sortFunction = sortFunctions[this.sortBy]?.[this.sortDirection];
 
-          // If sort function exists, sort products
+          // If sort function exists, sort lessons
           if (sortFunction) {
-            return this.products.sort(sortFunction);
+            return this.lessons.sort(sortFunction);
           }
 
-          // If sortBy and sortDirection are not specified, return original products
-          return this.products;
+          // If sortBy and sortDirection are not specified, return original lessons
+          return this.lessons;
         },
       },
     });

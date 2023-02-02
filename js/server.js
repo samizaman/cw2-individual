@@ -24,7 +24,7 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true }, (err, client
 app.use(express.json());
 app.set('port', port);
 app.use((req, res, next) => {
-  console.log(`${req.method} request for '${req.url}' - ${JSON.stringify(req.body)}`);
+  console.log(`${new Date().toLocaleTimeString()} - ${req.method} request for '${req.url}' - ${JSON.stringify(req.body)}`);
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
 });
@@ -36,7 +36,11 @@ app.use('/images', express.static(path.join(__dirname, '../images')));
 
 // Handle missing images
 app.use((req, res, next) => {
-  res.status(404).send('Image not found.');
+  if (req.url.startsWith('/images')) {
+    res.status(404).send('Image not found.');
+  } else {
+    next();
+  }
 });
 
 // Define the root endpoint
@@ -53,7 +57,7 @@ app.param('collectionName', (req, res, next, collectionName) => {
 
 
 // Define the collection endpoint
-app.get('/:collectionName', (req, res, next) => {
+app.get('/collection/:collectionName', (req, res, next) => {
   req.collection.find({}).toArray((e, results) => {
       if (e) return next(e) // if error, pass to error handler else send the results
       res.send(results)
