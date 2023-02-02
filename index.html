@@ -3,15 +3,22 @@
 
 <head>
   <title>COACH</title>
+
+  <!-- Link to stylesheet -->
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Link to JS -->
   <script src="js/products.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.10/dist/vue.js"></script>
-  <!-- We are using Font Awesome to create the cart icon  -->
+
+  <!-- Link to Font Awesome library  -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer">
+
   <!-- Link to Vue.js library -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.10/dist/vue.js"></script>
+
+  <!-- Link to Bootstrap library -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
@@ -29,18 +36,16 @@
             <input type="text" v-model="searchInput" class="form-control" placeholder="Search">
           </div>
         </div>
-        <header>
-          <button class="btn btn-outline-warning" v-on:click="showCheckout" v-if="validateCart">
-            <!-- 'cartItemCount' is used the same way as a data property. -->
-            {{ cartItemCount }}
-            <!-- add the cart icon -->
-            <span><i class="fa-solid fa-cart-shopping"></i> Cart</span>
-          </button>
-          <button v-else class="btn btn-outline-warning" disabled>
-            {{ cartItemCount }}
-            <span><i class="fa-solid fa-cart-shopping"></i> Cart</span>
-          </button>
-        </header>
+        <button class="btn btn-outline-warning" v-on:click="showCheckout" v-if="validateCart">
+          <!-- 'cartItemCount' is used the same way as a data property. -->
+          {{ cartItemCount }}
+          <!-- add the cart icon -->
+          <span><i class="fas fa-cart-shopping"></i> Cart</span>
+        </button>
+        <button v-else class="btn btn-outline-warning" disabled>
+          {{ cartItemCount }}
+          <span><i class="fas fa-cart-shopping"></i> Cart</span>
+        </button>
       </div>
     </nav>
     <!-- End of Navbar -->
@@ -326,48 +331,48 @@
       },
       methods: {
         validateCart() {
-          return this.cart.length > 0
+          return this.cart.length > 0;
         },
-        // pushes product to the cart array and subtracted one space
+        // pushes product to the cart array and subtracts one space
         addToCart(product) {
           this.cart.push(product); // pushing product id to the cart array
           this.products.forEach((item) => {
             if (item.id === product.id) {
               item.space -= 1;
             }
-          })
+          });
           console.log(this.cart);
         },
         // if showCheckout returns true it shows the products if its false it shows checkout
         showCheckout() {
-          if (this.cart.length > 0) {
-            this.showProduct = this.showProduct ? false : true
-          }
+          this.showProduct = !this.showProduct && this.cart.length > 0;
         },
+
+        // Submits the form and resets to fresh homepage
         submitForm() {
           alert("Order Submitted");
           this.cart = [];
-          this.showProduct = this.showProduct ? false : true
-
+          this.showProduct = true;
+          this.sortBy = "";
+          this.sortDirection = "";
+          this.searchInput = "";
         },
-        // removed one product from the cart array and subtracted one space
+        // removes one product from the cart array and adds one space
         removeFromCart(product) {
-          this.cart.splice(product, 1)
+          const index = this.cart.indexOf(product);
+          if (index >= 0) {
+            this.cart.splice(index, 1);
+          }
           this.products.forEach((item) => {
             if (item.id === product.id) {
               item.space += 1;
             }
-          })
+          });
           console.log(this.cart.length);
         },
         // checks whether we are able to add items to the cart based on what's there in our available inventory 
         canAddToCart(product) {
-          if (product.space > 0) {
-            return true;
-          } else {
-            return false;
-          }
-          console.log("canAddToCart");
+          return product.space > 0;
         },
       },
       computed: {
@@ -375,70 +380,56 @@
           const letterRegex = /^[A-Za-z\s]*$/;
           const numberRegex = /^\d{10}$/;
 
-          if (this.name.match(letterRegex) && this.phoneNumber.match(numberRegex)) {
-            return true
-          } else {
-            return false
-          }
-
+          return this.name.match(letterRegex) && this.phoneNumber.match(numberRegex);
         },
+
         cartItemCount: function () {
           console.log("cartItemCount");
           return this.cart.length || "";
         },
-        // localeCompare() method compares two strings in the current locale
-        // returns sort order -1, 1, or 0 (for before, after, or equal).
+
         searchAndSortProducts() {
+          // If search input is present, filter products by search input
           if (this.searchInput) {
-            return this.products.filter((product) => {
-              return product.subject.toLowerCase().includes(this.searchInput.toLowerCase()) || product.location.toLowerCase().includes(this.searchInput.toLowerCase())
-            })
+            return this.products.filter(product => {
+              const subjectMatch = product.subject.toLowerCase().includes(this.searchInput.toLowerCase());
+              const locationMatch = product.location.toLowerCase().includes(this.searchInput.toLowerCase());
+
+              return subjectMatch || locationMatch;
+            });
+          }
+          // localeCompare() method compares two strings in the current locale
+          // returns sort order -1, 1, or 0 (for before, after, or equal).
+          // Map sorting functions based on sortBy and sortDirection
+          const sortFunctions = {
+            subject: {
+              ascending: (a, b) => a.subject.localeCompare(b.subject),
+              descending: (a, b) => b.subject.localeCompare(a.subject),
+            },
+            price: {
+              ascending: (a, b) => a.price - b.price,
+              descending: (a, b) => b.price - a.price,
+            },
+            location: {
+              ascending: (a, b) => a.location.localeCompare(b.location),
+              descending: (a, b) => b.location.localeCompare(a.location),
+            },
+            availability: {
+              ascending: (a, b) => a.space - b.space,
+              descending: (a, b) => b.space - a.space,
+            },
+          };
+
+          const sortFunction = sortFunctions[this.sortBy]?.[this.sortDirection];
+
+          // If sort function exists, sort products
+          if (sortFunction) {
+            return this.products.sort(sortFunction);
           }
 
-          else if (this.sortBy === "subject" && this.sortDirection === "ascending") {
-            return this.products.sort((a, b) => {
-              return a.subject.localeCompare(b.subject)
-            })
-          }
-          else if (this.sortBy === "subject" && this.sortDirection === "descending") {
-            return this.products.sort((a, b) => {
-              return b.subject.localeCompare(a.subject)
-            })
-          }
-          else if (this.sortBy === "price" && this.sortDirection === "ascending") {
-            return this.products.sort((a, b) => {
-              return a.price - b.price
-            })
-          }
-          else if (this.sortBy === "price" && this.sortDirection === "descending") {
-            return this.products.sort((a, b) => {
-              return b.price - a.price
-            })
-          }
-          else if (this.sortBy === "location" && this.sortDirection === "ascending") {
-            return this.products.sort((a, b) => {
-              return a.location.localeCompare(b.location)
-            })
-          }
-          else if (this.sortBy === "location" && this.sortDirection === "descending") {
-            return this.products.sort((a, b) => {
-              return b.location.localeCompare(a.location)
-            })
-          }
-          else if (this.sortBy === "availability" && this.sortDirection === "ascending") {
-            return this.products.sort((a, b) => {
-              return a.space - b.space
-            })
-          }
-          else if (this.sortBy === "availability" && this.sortDirection === "descending") {
-            return this.products.sort((a, b) => {
-              return b.space - a.space
-            })
-          }
-          else {
-            return this.products
-          }
-        }
+          // If sortBy and sortDirection are not specified, return original products
+          return this.products;
+        },
       },
     });
   </script>
