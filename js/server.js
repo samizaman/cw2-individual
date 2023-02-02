@@ -1,6 +1,7 @@
 // Import dependencies modules
 const express = require('express');
 const { MongoClient } = require('mongodb');
+const path = require('path');
 require('dotenv').config();
 
 // Initialize Express and MongoDB
@@ -28,6 +29,15 @@ app.use((req, res, next) => {
   next();
 });
 
+
+// Serve images
+app.use('/images', express.static(path.join(__dirname, '../images')));
+
+
+// Handle missing images
+app.use((req, res, next) => {
+  res.status(404).send('Image not found.');
+});
 
 // Define the root endpoint
 app.get('/', (req, res) => {
