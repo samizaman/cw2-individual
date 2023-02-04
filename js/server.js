@@ -26,6 +26,8 @@ app.set('port', port);
 app.use((req, res, next) => {
   console.log(`${new Date().toLocaleTimeString()} - ${req.method} request for '${req.url}' - ${JSON.stringify(req.body)}`);
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
   next();
 });
 
@@ -58,11 +60,34 @@ app.param('collectionName', (req, res, next, collectionName) => {
 
 // Define the collection endpoint
 app.get('/collection/:collectionName', (req, res, next) => {
-  req.collection.find({}).toArray((e, results) => {
-      if (e) return next(e) // if error, pass to error handler else send the results
-      res.send(results)
-  })
-})
+  req.collection.find({}).toArray((error, results) => {
+    if (error) {
+      return next(error);
+    } else {
+      if (results) {
+        res.send(results);
+      } else {
+        return next(new Error('No data found in the collection'));
+      }
+    }
+  });
+});
+
+
+app.post('/collection/:collectionName', (req, res) => {
+  req.collection.insertOne({
+    name: req.body.name,
+    phone: req.body.phone,
+    lessons: req.body.lessons
+  }, (error, result) => {
+    if (error) {
+      return res.status(500).send({ success: false });
+    }
+    res.status(200).send({ success: true });
+  });
+});
+
+
 
 
 // Start the server
