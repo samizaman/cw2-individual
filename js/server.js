@@ -1,7 +1,8 @@
 // Import dependencies modules
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectID } = require('mongodb');
 const path = require('path');
+const cors = require('cors');
 require('dotenv').config();
 
 // Initialize Express and MongoDB
@@ -21,15 +22,20 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true }, (err, client
 });
 
 // Configure Express
-app.use(express.json());
 app.set('port', port);
+
+// Use cors middleware
+app.use(cors());
+app.use(express.json());
 app.use((req, res, next) => {
   console.log(`${new Date().toLocaleTimeString()} - ${req.method} request for '${req.url}' - ${JSON.stringify(req.body)}`);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 
   next();
 });
+
 
 
 // Serve images
@@ -87,6 +93,34 @@ app.post('/collection/:collectionName', (req, res) => {
   });
 });
 
+
+app.put("/collection/:collectionName/:id", (req, res, next) => {
+  req.collection.updateOne(
+    {
+      _id: new ObjectID(req.params.id),
+    },
+    { $set: req.body },
+    { safe: true, multi: false },
+    (error, result) => {
+      if (error) {
+        return res.status(500).send(error);
+      }
+      res.send(result);
+    });
+});
+
+
+app.get("/collection/:collectionName/:search", (req, res, next) => {
+  req.collection.find({ name: req.params.search }).toArray((error, results) => {
+    if (error) {
+      return next(error);
+    } 
+    let searchResults = results.filter((result) => {
+      return result.name.toLowerCase().includes(req.params.search.toLowerCase());
+    });
+    res.send(searchResults);
+  });
+});
 
 
 

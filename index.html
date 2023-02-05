@@ -33,13 +33,7 @@
             <input type="text" v-model="searchInput" class="form-control" placeholder="Search">
           </div>
         </div>
-        <button class="btn btn-outline-warning" v-on:click="showCheckout" v-if="validateCart">
-          <!-- 'cartItemCount' is used the same way as a data property. -->
-          {{ cartItemCount }}
-          <!-- add the cart icon -->
-          <span><i class="fas fa-cart-shopping"></i> Cart</span>
-        </button>
-        <button v-else class="btn btn-outline-warning" disabled>
+        <button class="btn btn-warning" v-on:click="showCheckout" :disabled="!validateCart">
           {{ cartItemCount }}
           <span><i class="fas fa-cart-shopping"></i> Cart</span>
         </button>
@@ -117,7 +111,7 @@
                     <img :src="lesson.image" alt="lesson-image" width="200" height="220">
                   </figure>
                   <div class="card-body">
-                    <h5 class="card-title text-center">{{ lesson.topic }}</h5>
+                    <h5 class="card-title text-center">{{ lesson.subject }}</h5>
 
                     <p class="card-text text-center text-muted">{{lesson.location}}</p>
                     <p class="card-text">Price: £ {{lesson.price}}</p>
@@ -249,11 +243,8 @@
                           <div class="media-body  my-auto">
                             <div class="row ">
                               <div class="col-auto">
-                                <p class="mb-0"><b>{{lesson.topic}}</b></p>
-                                <small class="text-muted">{{lesson.location}}</small>
-                              </div>
-                              <div>
-                                <b>Quantity: {{lesson.quantity}}</b>
+                                <p class="mb-0"><b>{{lesson.subject}}</b></p>
+                                <small class="text-muted">Quantity: {{lesson.quantity}}</small>
                               </div>
                             </div>
                           </div>
@@ -343,9 +334,6 @@
 
       },
       methods: {
-        validateCart() {
-          return this.cart.length > 0;
-        },
         // pushes lesson to the cart array and subtracts one space
         addToCart(lesson) {
 
@@ -354,19 +342,15 @@
             existingLesson.quantity += 1;
             existingLesson.space -= 1;
             existingLesson.price += lesson.price;
-            console.log("-------------------------");
           } else {
             let selectedLesson = this.lessons.find(item => item._id === lesson._id);
             selectedLesson.space -= 1;
-            console.log("++++++++++++++++++++++++++++");
             let newLesson = {
               _id: selectedLesson._id,
               price: lesson.price,
               quantity: 1,
               space: selectedLesson.space
             }
-            this.test.push(newLesson);
-            console.log("Test: ", JSON.stringify(this.test));
             this.cart.push(selectedLesson);
           }
           console.log("Added to cart: ", JSON.stringify(this.cart));
@@ -389,7 +373,8 @@
           this.cart.forEach(item => {
             let lesson = {
               lesson_id: item._id,
-              quantity: item.quantity
+              quantity: item.quantity,
+              space: item.space
             };
             data.lessons.push(lesson);
           });
@@ -419,6 +404,31 @@
               alert(error.message);
             });
 
+          this.cart.forEach(item => {
+            fetch(`http://localhost:3000/collection/lessons/${item._id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                space: item.space
+              })
+            })
+              .then(res => {
+                if (!res.ok) {
+                  throw new Error('Failed to update spaces, please try again later');
+                }
+                return res.json();
+              })
+              .then(res => {
+                console.log(res);
+              })
+              .catch(error => {
+                console.error(error);
+                alert(error.message);
+              });
+          });
+
           this.cart = [];
           this.showLesson = true;
           this.sortBy = "";
@@ -444,6 +454,9 @@
         },
       },
       computed: {
+        validateCart() {
+          return this.cart.length > 0;
+        },
         validateCheckout() {
           const letterRegex = /^[A-Za-z\s]*$/;
           const numberRegex = /^\d{10}$/;
