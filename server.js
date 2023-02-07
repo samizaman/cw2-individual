@@ -126,10 +126,12 @@ app.get("/collection/:collectionName/:search", (req, res, next) => {
     if (error) {
       return next(error);
     } 
+    searchParam = req.params.search;
     let searchResults = results.filter((result) => {
-      return result.topic.toLowerCase().includes(req.params.search.toLowerCase()) || 
-      result.location.toLowerCase().includes(req.params.search.toLowerCase());
+      return result.topic.toLowerCase().includes(searchParam.toLowerCase()) || 
+      result.location.toLowerCase().includes(searchParam.toLowerCase());
     });
+    console.log("==================" + JSON.stringify(searchResults));
     res.send(searchResults);
   });
 });
