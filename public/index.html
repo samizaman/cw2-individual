@@ -321,7 +321,7 @@
       created: function () {
         console.log("Requesting data from server...");
 
-        fetch('http://localhost:3000/collection/lessons')
+        fetch('collection/lessons')
           .then(response => response.json())
           .then(lessons => {
             this.lessons = lessons

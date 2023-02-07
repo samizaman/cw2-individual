@@ -54,14 +54,14 @@ app.use('/images', express.static(path.join(__dirname, '../images')));
 app.use((express.static("public")));
 
 
-// Define the collection parameter
+// Param middleware
 app.param('collectionName', (req, res, next, collectionName) => {
   req.collection = db.collection(collectionName);
   next();
 });
 
 
-// Define the collection endpoint
+// GET request for lessons
 app.get('/collection/:collectionName', (req, res, next) => {
   req.collection.find({}).toArray((error, results) => {
     if (error) {
@@ -77,6 +77,7 @@ app.get('/collection/:collectionName', (req, res, next) => {
 });
 
 
+// GET request to get a single image
 app.get('/images/:name', (req, res, next) => {
   try {
     const name = req.params.name;
@@ -87,6 +88,7 @@ app.get('/images/:name', (req, res, next) => {
 });
 
 
+// POST request to add a new lesson to orders
 app.post('/collection/:collectionName', (req, res) => {
   req.collection.insertOne({
     name: req.body.name,
@@ -101,6 +103,7 @@ app.post('/collection/:collectionName', (req, res) => {
 });
 
 
+// PUT request to update a lesson
 app.put("/collection/:collectionName/:id", (req, res, next) => {
   req.collection.updateOne(
     {
@@ -117,6 +120,7 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
 });
 
 
+// GET request to search for a lesson
 app.get("/collection/:collectionName/:search", (req, res, next) => {
   req.collection.find({}).toArray((error, results) => {
     if (error) {
