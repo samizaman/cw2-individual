@@ -122,19 +122,18 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
 
 // GET request to search for a lesson
 app.get("/collection/:collectionName/:search", (req, res, next) => {
-  req.collection.find({}).toArray((error, results) => {
-    if (error) {
-      return next(error);
-    } 
-    searchParam = req.params.search;
-    let searchResults = results.filter((result) => {
-      return result.topic.toLowerCase().includes(searchParam.toLowerCase()) || 
-      result.location.toLowerCase().includes(searchParam.toLowerCase());
+  const sh = req.params.search;
+  req.collection.find(
+    {subject: sh},
+    (error, results) => {
+      if (error) {
+        return next(error);
+      } else{
+        res.send(results);
+      }
     });
-    console.log("==================" + JSON.stringify(searchResults));
-    res.send(searchResults);
   });
-});
+  
 
 
 // Start the server

@@ -31,17 +31,17 @@ var vueInstance = new Vue({
   },
   methods: {
     searchLessons() {
-      fetch('collection/lessons/' + this.searchInput)
+      fetch('collection/lessons/' + this.searchInput.toLowerCase())
         .then(response => response.json())
-        .then(lessons => {
-          this.lessons = lessons
-          console.log("Data received from server: ", lessons);
+        .then(data => {
+          vueInstance.lessons = data;
+          console.log("Data received from server: ", data);
 
         })
-        .catch(error => {
-          console.log("---------------------------------------");
-          console.error(error)
-        })
+        // .catch(error => {
+        //   console.log("---------------------------------------");
+        //   console.error(error)
+        // })
     },
     // pushes lesson to the cart array and subtracts one space
     addToCart(lesson) {
@@ -156,10 +156,6 @@ var vueInstance = new Vue({
         }
       });
       console.log(this.cart.length);
-    },
-    // checks whether we are able to add items to the cart based on what's there in our available inventory 
-    canAddToCart(lesson) {
-      return lesson.space > 0;
     },
   },
   computed: {

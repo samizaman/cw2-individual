@@ -1,15 +1,9 @@
-.custom{
+.width-100 {
     width:100%;
 }
 
-.active-2 {
-    color: rgb(92, 92, 92) 
-}
-
 .breadcrumb {
-    padding: 0px;
-    font-size: 10px;
-    color: #aaa !important;
+    font-size: 12px !important;
 }
 
 a {
