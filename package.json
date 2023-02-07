@@ -2,10 +2,10 @@
   "name": "cw2-individual",
   "version": "1.0.0",
   "description": "",
-  "main": "js/server.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon js/server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",

@@ -43,18 +43,15 @@ app.use('/images', express.static(path.join(__dirname, '../images')));
 
 
 // Handle missing images
-app.use((req, res, next) => {
-  if (req.url.startsWith('/images')) {
-    res.status(404).send('Image not found.');
-  } else {
-    next();
-  }
-});
+// app.use((req, res, next) => {
+//   if (req.url.startsWith('/images')) {
+//     res.status(404).send('Image not found.');
+//   } else {
+//     next();
+//   }
+// });
 
-// Define the root endpoint
-app.get('/', (req, res) => {
-  res.send('Select a collection, e.g., /collection/lessons');
-});
+app.use((express.static("public")));
 
 
 // Define the collection parameter
@@ -77,6 +74,16 @@ app.get('/collection/:collectionName', (req, res, next) => {
       }
     }
   });
+});
+
+
+app.get('/images/:name', (req, res, next) => {
+  try {
+    const name = req.params.name;
+    res.sendFile(path.join(__dirname, "public\\" + name))
+  } catch (error) {
+    next(error);
+  }
 });
 
 
@@ -111,17 +118,17 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
 
 
 app.get("/collection/:collectionName/:search", (req, res, next) => {
-  req.collection.find({ name: req.params.search }).toArray((error, results) => {
+  req.collection.find({}).toArray((error, results) => {
     if (error) {
       return next(error);
     } 
     let searchResults = results.filter((result) => {
-      return result.name.toLowerCase().includes(req.params.search.toLowerCase());
+      return result.topic.toLowerCase().includes(req.params.search.toLowerCase()) || 
+      result.location.toLowerCase().includes(req.params.search.toLowerCase());
     });
     res.send(searchResults);
   });
 });
-
 
 
 // Start the server

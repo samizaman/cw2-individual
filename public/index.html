@@ -5,7 +5,7 @@
   <title>COACH</title>
 
   <!-- Link to stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/public/css/style.css">
 
   <!-- Link to Font Awesome library  -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
@@ -30,7 +30,7 @@
         <a class="navbar-brand">COACH</a>
         <div class="col-md-8">
           <div class="form-group">
-            <input type="text" v-model="searchInput" class="form-control" placeholder="Search">
+            <input type="text" v-model="searchInput" @input="searchLessons" class="form-control" placeholder="Search">
           </div>
         </div>
         <button class="btn btn-warning" v-on:click="showCheckout" :disabled="!validateCart">
@@ -334,6 +334,19 @@
 
       },
       methods: {
+        searchLessons() {
+          fetch('collection/lessons/' + this.searchInput)
+            .then(response => response.json())
+            .then(lessons => {
+              this.lessons = lessons
+              console.log("Data received from server: ", lessons);
+
+            })
+            .catch(error => {
+              console.log("---------------------------------------");
+              console.error(error)
+            })
+        },
         // pushes lesson to the cart array and subtracts one space
         addToCart(lesson) {
 
@@ -379,7 +392,7 @@
             data.lessons.push(lesson);
           });
 
-          fetch('http://localhost:3000/collection/orders', {
+          fetch('collection/orders', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -405,7 +418,7 @@
             });
 
           this.cart.forEach(item => {
-            fetch(`http://localhost:3000/collection/lessons/${item._id}`, {
+            fetch(`collection/lessons/${item._id}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json'
@@ -472,14 +485,22 @@
         },
 
         searchAndSortLessons() {
-          // If search input is present, filter lessons by search input
+          // If search input is present, send a GET request with the search input as a parameter
           if (this.searchInput) {
-            return this.lessons.filter(lesson => {
-              const topicMatch = lesson.topic.toLowerCase().includes(this.searchInput.toLowerCase());
-              const locationMatch = lesson.location.toLowerCase().includes(this.searchInput.toLowerCase());
-
-              return topicMatch || locationMatch;
-            });
+            fetch(`collection/lessons/${this.searchInput}`)
+              .then(res => {
+                if (!res.ok) {
+                  throw new Error('Failed to fetch search results, please try again later');
+                }
+                return res.json();
+              })
+              .then(searchResults => {
+                this.lessons = searchResults;
+              })
+              .catch(error => {
+                console.error(error);
+                alert(error.message);
+              });
           }
           // localeCompare() method compares two strings in the current locale
           // returns sort order -1, 1, or 0 (for before, after, or equal).
