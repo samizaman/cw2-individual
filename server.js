@@ -42,15 +42,6 @@ app.use((req, res, next) => {
 app.use('/images', express.static(path.join(__dirname, '../images')));
 
 
-// Handle missing images
-// app.use((req, res, next) => {
-//   if (req.url.startsWith('/images')) {
-//     res.status(404).send('Image not found.');
-//   } else {
-//     next();
-//   }
-// });
-
 app.use((express.static("public")));
 
 

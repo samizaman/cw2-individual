@@ -198,9 +198,9 @@ var vueInstance = new Vue({
       // returns sort order -1, 1, or 0 (for before, after, or equal).
       // Map sorting functions based on sortBy and sortDirection
       const sortFunctions = {
-        topic: {
-          ascending: (a, b) => a.topic.localeCompare(b.topic),
-          descending: (a, b) => b.topic.localeCompare(a.topic),
+        subject: {
+          ascending: (a, b) => a.subject.localeCompare(b.subject),
+          descending: (a, b) => b.subject.localeCompare(a.subject),
         },
         price: {
           ascending: (a, b) => a.price - b.price,
