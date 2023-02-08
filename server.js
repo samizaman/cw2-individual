@@ -19,7 +19,7 @@ if (!connectionString) {
 }
 
 // Connect to MongoDB
-MongoClient.connect(connectionString, { useUnifiedTopology: true }, (err, client) => {
+MongoClient.connect('mongodb+srv://samizaman:sami20563@cluster0.raoalwi.mongodb.net', { useUnifiedTopology: true }, (err, client) => {
   if (err) {
     console.log('Error connecting to MongoDB:', err);
   } else {
