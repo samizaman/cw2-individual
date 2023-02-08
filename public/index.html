@@ -6,7 +6,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
   <!-- Link to stylesheet -->
   <link rel="stylesheet" href="/css/style.css">
 
@@ -22,6 +21,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 
+  <!-- Link icon -->
   <link type="image/png" sizes="96x96" rel="icon" href="images/icon.png">
 </head>
 
@@ -32,6 +32,7 @@
     <!-- Start of Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
       <div class="container-fluid">
+        <!-- Logo -->
         <a class="navbar-brand" href="#">
           <img src="images/logo.svg" width="150" alt="COACH logo">
         </a>
@@ -40,11 +41,14 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <!-- Search Bar -->
           <form class="form-inline mx-auto my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <input v-model="searchInput" @input="searchLessons" class="form-control mr-sm-2" type="search"
+              placeholder="Search" aria-label="Search">
           </form>
+          <!-- Cart Button -->
           <button class="btn btn-warning" :disabled="!validateCart" @click="showCheckout">Cart
-            <span class="badge text-bg-warning"><i class="fas fa-cart-shopping"></i> {{ cartItemCount }}
+            <span class="badge text-bg-warning"><i class="fas fa-cart-shopping"></i> {{ getTotalCartItemCount }}
             </span>
           </button>
         </div>
@@ -56,7 +60,7 @@
     <div v-if="showLesson">
 
       <div class="container">
-        <div class="row ">
+        <div class="row">
           <div class="col-sm-2 mt-4">
             <!-- Start of Filter -->
             <hr>
@@ -112,10 +116,9 @@
           <div class="col-sm-10 mt-4">
             <h4>RESULTS</h4>
             <!-- Start of Lesson Cards -->
-            <div v-for="lesson in searchAndSortLessons" class="d-inline-block p-2">
+            <div v-for="lesson in sortLessons" class="d-inline-block p-2">
               <div class="card text-center">
                 <figure>
-                  <!-- bind the 'src' attribute to the 'lesson.image' in 'data' -->
                   <img :src="lesson.image" alt="lesson-image" class="img-fluid">
                 </figure>
                 <div class="card-body">
@@ -133,6 +136,7 @@
                   <p class="card-text"><strong>Price: £ {{lesson.price}}</strong></p>
                   <p class="card-text">Space: {{lesson.space}}</p>
 
+                  <!-- Add to Cart button -->
                   <button class="btn btn-warning" @click="addToCart(lesson)" :disabled="lesson.space <= 0">
                     Add to Cart
                   </button>
@@ -224,9 +228,9 @@
                     <div class="row mb-md-5">
                       <div class="row mb-5 mt-4 ">
                         <div>
-                          <button v-on:click="submitForm" type="button"
+                          <button v-on:click="submitAndProcessOrder" type="button"
                             class="btn btn-success btn-md btn-block width-100 ml-3"
-                            v-if="validateCheckout">PURCHASE</button>
+                            v-if="validateCheckoutInputs">PURCHASE</button>
                           <button v-else type="button" class="btn btn-success btn-md btn-block width-100 ml-3"
                             disabled>PURCHASE</button>
                         </div>
@@ -260,7 +264,7 @@
                         </div>
                       </div>
                       <div class=" pl-0 flex-sm-col col-auto  my-auto">
-                        <button type="button" v-on:click="removeFromCart(lesson)" class="btn btn-danger"><span
+                        <button type="button" v-on:click="removeLessonFromCart(lesson)" class="btn btn-danger"><span
                             class="fa-solid fa-trash-can"></span></button>
                       </div>
                       <div class=" pl-0 flex-sm-col col-auto  my-auto ">

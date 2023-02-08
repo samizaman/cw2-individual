@@ -112,20 +112,27 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
 
 
 // GET request to search for a lesson
+// This is a GET route for searching a collection in the database.
 app.get("/collection/:collectionName/:search", (req, res, next) => {
-  const sh = req.params.search;
-  req.collection.find(
-    {subject: sh},
-    (error, results) => {
-      if (error) {
-        return next(error);
-      } else{
-        res.send(results);
-      }
-    });
+  // The collection is found using the find() method with a search query. 
+  req.collection.find({ 
+    // The search query uses the $or operator to match either the topic or location in the collection.
+    $or: [
+      // The topic is matched using a regex expression, using the search parameter from the route, case insensitive.
+      { subject: { $regex: `.*${req.params.search}.*`, $options: 'i' } }, 
+      // The location is matched using a regex expression, using the search parameter from the route, case insensitive.
+      { location: { $regex: `.*${req.params.search}.*`, $options: 'i' } }
+    ] 
+  // The toArray() method is used to convert the results from the find() method into an array.
+  }).toArray((error, results) => {
+    // If there is an error, it is passed to the next middleware function.
+    if (error) {
+      return next(error);
+    } 
+    // The results are sent as a response to the client.
+    res.send(results);
   });
-  
-
+});
 
 // Start the server
 app.listen(port, () => {

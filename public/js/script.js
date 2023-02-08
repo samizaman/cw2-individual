@@ -1,9 +1,8 @@
 var vueInstance = new Vue({
   el: "#app",
-  data: () => {
-    return {
+  data: {
       lessons: [],
-      cart: [], // array to store items in shopping cart
+      cart: [],
       showLesson: true,
       sortBy: "",
       sortDirection: "",
@@ -11,57 +10,48 @@ var vueInstance = new Vue({
       phoneNumber: "",
       isValid: false,
       name: "",
-      test: [],
-    };
-  },
+    },
   created: function () {
     console.log("Requesting data from server...");
-
-    fetch('collection/lessons')
-      .then(response => response.json())
-      .then(lessons => {
-        this.lessons = lessons
-        console.log("Data received from server: ", lessons);
-
-      })
-      .catch(error => {
-        console.error(error)
-      })
+    this.fetchData('collection/lessons');
 
   },
   methods: {
-    searchLessons() {
-      fetch('collection/lessons/' + this.searchInput.toLowerCase())
+    fetchData(url) {
+      // Fetch API used to make a GET request to the server
+      fetch(url)
+        // Parse the response as JSON data
         .then(response => response.json())
         .then(data => {
-          vueInstance.lessons = data;
+          // Set the lessons property in the Vue instance to the data received from the server
+          this.lessons = data
           console.log("Data received from server: ", data);
-
         })
-        // .catch(error => {
-        //   console.log("---------------------------------------");
-        //   console.error(error)
-        // })
+        .catch(error => {
+          console.error(error)
+        })
     },
-    // pushes lesson to the cart array and subtracts one space
+    searchLessons() {
+      this.fetchData('http://localhost:3000/collection/lessons/' + this.searchInput);
+    },
+    
+    // Function to add a lesson to the cart
     addToCart(lesson) {
-
+      // Check if the lesson already exists in the cart
       let existingLesson = this.cart.find(item => item._id === lesson._id);
+
+      // If the lesson already exists in the cart
       if (existingLesson) {
         existingLesson.quantity += 1;
         existingLesson.space -= 1;
         existingLesson.price += lesson.price;
-      } else {
-        let selectedLesson = this.lessons.find(item => item._id === lesson._id);
-        selectedLesson.space -= 1;
-        let newLesson = {
-          _id: selectedLesson._id,
-          price: lesson.price,
-          quantity: 1,
-          space: selectedLesson.space
-        }
-        this.cart.push(selectedLesson);
+      } 
+      // If the lesson does not exist in the cart
+      else {
+        lesson.space -= 1;
+        this.cart.push(lesson);
       }
+      // Log the updated cart to the console
       console.log("Added to cart: ", JSON.stringify(this.cart));
     },
 
@@ -70,15 +60,16 @@ var vueInstance = new Vue({
       this.showLesson = !this.showLesson && this.cart.length > 0;
     },
 
-    // Submits the form and resets to fresh homepage
-    submitForm() {
-      // alert("Order Submitted");
+    // Function to submit and process the form data for ordering lessons
+    submitAndProcessOrder() {
+      // Form data to be sent to the server
       let data = {
         name: this.name,
         phone: this.phoneNumber,
         lessons: []
       };
 
+      // Loop through the items in the cart and create a lesson object for each item
       this.cart.forEach(item => {
         let lesson = {
           lesson_id: item._id,
@@ -88,6 +79,7 @@ var vueInstance = new Vue({
         data.lessons.push(lesson);
       });
 
+      // Send a POST request to the server with the form data
       fetch('collection/orders', {
         method: 'POST',
         headers: {
@@ -96,12 +88,15 @@ var vueInstance = new Vue({
         body: JSON.stringify(data)
       })
         .then(res => {
+          // If the response is not okay, throw an error
           if (!res.ok) {
             throw new Error('Failed to submit order, please try again later');
           }
+          // Return the response in JSON format
           return res.json();
         })
         .then(res => {
+          // If the order was submitted successfully, show a success message
           if (res.success) {
             alert('Order submitted successfully');
           } else {
@@ -109,10 +104,12 @@ var vueInstance = new Vue({
           }
         })
         .catch(error => {
+          // Log the error in the console and show an error message
           console.error(error);
           alert(error.message);
         });
 
+      // Loop through the items in the cart and send a PUT request to update the spaces
       this.cart.forEach(item => {
         fetch(`collection/lessons/${item._id}`, {
           method: 'PUT',
@@ -124,28 +121,35 @@ var vueInstance = new Vue({
           })
         })
           .then(res => {
+            // If the response is not okay, throw an error
             if (!res.ok) {
               throw new Error('Failed to update spaces, please try again later');
             }
+            // Return the response in JSON format
             return res.json();
           })
           .then(res => {
             console.log(res);
           })
           .catch(error => {
+            // Log the error in the console and show an error message
             console.error(error);
             alert(error.message);
           });
       });
 
+      // Reset the form fields and cart
       this.cart = [];
       this.showLesson = true;
       this.sortBy = "";
       this.sortDirection = "";
       this.searchInput = "";
     },
-    // removes one lesson from the cart array and adds one space
-    removeFromCart(lesson) {
+    /**
+     * Removes one lesson from the cart array and adds one space to the original lesson
+     * @param {Object} lesson - The lesson to be removed from the cart
+     */
+    removeLessonFromCart(lesson) {
       const index = this.cart.indexOf(lesson);
       if (index >= 0) {
         this.cart.splice(index, 1);
@@ -162,41 +166,28 @@ var vueInstance = new Vue({
     validateCart() {
       return this.cart.length > 0;
     },
-    validateCheckout() {
+    /**
+     * Validates the name and phone number inputs for checkout
+     * @returns {Boolean} - Returns true if both name and phone number inputs match the validation criteria
+     */
+    validateCheckoutInputs() {
       const letterRegex = /^[A-Za-z\s]*$/;
       const numberRegex = /^\d{10}$/;
 
       return this.name.match(letterRegex) && this.phoneNumber.match(numberRegex);
     },
-
-    cartItemCount: function () {
+    /**
+     * Calculates the total quantity of items in the cart
+     * @returns {Number} - Returns the total quantity of items in the cart
+     */
+    getTotalCartItemCount() {
       let totalQuantity = 0;
       this.cart.forEach(item => totalQuantity += item.quantity);
       console.log(totalQuantity + " items in cart");
       return totalQuantity || "";
     },
-
-    searchAndSortLessons() {
-      // If search input is present, send a GET request with the search input as a parameter
-    //   if (this.searchInput) {
-    //     fetch(`collection/lessons/${this.searchInput}`)
-    //       .then(res => {
-    //         if (!res.ok) {
-    //           throw new Error('Failed to fetch search results, please try again later');
-    //         }
-    //         return res.json();
-    //       })
-    //       .then(searchResults => {
-    //         this.lessons = searchResults;
-    //       })
-    //       .catch(error => {
-    //         console.error(error);
-    //         alert(error.message);
-    //       });
-    //   }
-      // localeCompare() method compares two strings in the current locale
-      // returns sort order -1, 1, or 0 (for before, after, or equal).
-      // Map sorting functions based on sortBy and sortDirection
+    // Sort lessons based on specified sortBy and sortDirection
+    sortLessons() {
       const sortFunctions = {
         subject: {
           ascending: (a, b) => a.subject.localeCompare(b.subject),
@@ -215,10 +206,10 @@ var vueInstance = new Vue({
           descending: (a, b) => b.space - a.space,
         },
       };
-
+      // Check if sort function exists based on sortBy and sortDirection
       const sortFunction = sortFunctions[this.sortBy]?.[this.sortDirection];
 
-      // If sort function exists, sort lessons
+      // If sort function exists, sort lessons and return sorted lessons
       if (sortFunction) {
         return this.lessons.sort(sortFunction);
       }
