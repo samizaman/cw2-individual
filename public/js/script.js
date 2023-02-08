@@ -98,7 +98,7 @@ var vueInstance = new Vue({
         .then(res => {
           // If the order was submitted successfully, show a success message
           if (res.success) {
-            alert('Order submitted successfully');
+            alert('Order submitted successfully 🎉');
           } else {
             alert('Something went wrong');
           }
