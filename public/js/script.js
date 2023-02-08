@@ -32,7 +32,7 @@ var vueInstance = new Vue({
         })
     },
     searchLessons() {
-      this.fetchData('http://localhost:3000/collection/lessons/' + this.searchInput);
+      this.fetchData('collection/lessons/' + this.searchInput);
     },
     
     // Function to add a lesson to the cart
