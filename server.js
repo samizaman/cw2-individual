@@ -102,7 +102,7 @@ app.post('/collection/:collectionName', (req, res) => {
     if (error) {
       return res.status(500).send({ success: false, message: error.message });
     }
-    res.status(200).send({ success: true, message: 'Lesson added successfully' });
+    res.status(200).send({ success: true, message: 'Order added successfully' });
   });
 });
 
