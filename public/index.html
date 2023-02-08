@@ -249,67 +249,76 @@
                     <p class="card-text text-muted mt-md-4  mb-2 space">YOUR ORDER</p>
                   </div>
                   <div class="card-body pt-0">
-                    <div class="row  justify-content-between" v-for="lesson in cart">
-                      <div class="col-auto col-md-7">
-                        <div class="media flex-column flex-sm-row">
-                          <img class=" img-fluid" :src="lesson.image" width="62" height="62">
-                          <div class="media-body  my-auto">
-                            <div class="row ">
-                              <div class="col-auto">
-                                <p class="mb-0"><b>{{lesson.subject}}</b></p>
-                                <small class="text-muted">Quantity: {{lesson.quantity}}</small>
+                    <template v-if="cart.length > 0">
+                      <div class="row  justify-content-between" v-for="lesson in cart">
+                        <div class="col-auto col-md-7">
+                          <div class="media flex-column flex-sm-row">
+                            <img class=" img-fluid" :src="lesson.image" width="62" height="62">
+                            <div class="media-body  my-auto">
+                              <div class="row ">
+                                <div class="col-auto">
+                                  <p class="mb-0"><b>{{lesson.subject}}</b></p>
+                                  <small class="text-muted">Quantity: {{lesson.quantity}}</small>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
+                        <div class=" pl-0 flex-sm-col col-auto  my-auto">
+                          <button type="button" v-on:click="removeLessonFromCart(lesson)" class="btn btn-danger"><span
+                              class="fa-solid fa-trash-can"></span></button>
+                        </div>
+                        <div class=" pl-0 flex-sm-col col-auto  my-auto ">
+                          <p><b>£ {{lesson.price}}</b></p>
+                        </div>
+                        <hr class="my-2">
                       </div>
-                      <div class=" pl-0 flex-sm-col col-auto  my-auto">
-                        <button type="button" v-on:click="removeLessonFromCart(lesson)" class="btn btn-danger"><span
-                            class="fa-solid fa-trash-can"></span></button>
-                      </div>
-                      <div class=" pl-0 flex-sm-col col-auto  my-auto ">
-                        <p><b>£ {{lesson.price}}</b></p>
-                      </div>
-                      <hr class="my-2">
-                    </div>
 
-                    <div class="row ">
-                      <div class="col">
-                        <div class="row justify-content-between">
-                          <div class="col-4">
-                            <p class="mb-1"><b>Subtotal</b></p>
+                      <div class="row ">
+                        <div class="col">
+                          <div class="row justify-content-between">
+                            <div class="col-4">
+                              <p class="mb-1"><b>Subtotal</b></p>
+                            </div>
+                            <div class="flex-sm-col col-auto">
+                              <p class="mb-1"><b>FREE</b></p>
+                            </div>
                           </div>
-                          <div class="flex-sm-col col-auto">
-                            <p class="mb-1"><b>FREE</b></p>
+                          <div class="row justify-content-between">
+                            <div class="col">
+                              <p class="mb-1"><b>Shipping</b></p>
+                            </div>
+                            <div class="flex-sm-col col-auto">
+                              <p class="mb-1"><b>FREE</b></p>
+                            </div>
                           </div>
+                          <div class="row justify-content-between">
+                            <div class="col-4">
+                              <p><b>Total</b></p>
+                            </div>
+                            <div class="flex-sm-col col-auto">
+                              <p class="mb-1"><b>FREE</b></p>
+                            </div>
+                          </div>
+                          <hr class="my-0">
                         </div>
-                        <div class="row justify-content-between">
-                          <div class="col">
-                            <p class="mb-1"><b>Shipping</b></p>
-                          </div>
-                          <div class="flex-sm-col col-auto">
-                            <p class="mb-1"><b>FREE</b></p>
-                          </div>
-                        </div>
-                        <div class="row justify-content-between">
-                          <div class="col-4">
-                            <p><b>Total</b></p>
-                          </div>
-                          <div class="flex-sm-col col-auto">
-                            <p class="mb-1"><b>FREE</b></p>
-                          </div>
-                        </div>
-                        <hr class="my-0">
                       </div>
-                    </div>
+                    </template>
+                    <template v-else>
+                      <p class="text-center my-4">Please add items to the cart</p>
+
+                    </template>
                   </div>
                 </div>
+                <!-- End of Cart -->
               </div>
             </div>
-            <!-- End of Cart -->
           </div>
+          <!-- Closing Row -->
         </div>
+        <!-- Closing Container -->
       </div>
+      <!-- Closing v-else -->
     </div>
   </div>
 

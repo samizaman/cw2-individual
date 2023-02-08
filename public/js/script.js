@@ -150,13 +150,17 @@ var vueInstance = new Vue({
      * @param {Object} lesson - The lesson to be removed from the cart
      */
     removeLessonFromCart(lesson) {
-      const index = this.cart.indexOf(lesson);
+      const index = this.cart.findIndex(item => item._id === lesson._id);
       if (index >= 0) {
-        this.cart.splice(index, 1);
+        if (this.cart[index].quantity === 1) {
+          this.cart.splice(index, 1);
+        } else {
+          this.cart[index].quantity--;
+        }
       }
       this.lessons.forEach((item) => {
         if (item._id === lesson._id) {
-          item.space += 1;
+          item.space++;
         }
       });
       console.log(this.cart.length);
