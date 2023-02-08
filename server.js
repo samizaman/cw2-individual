@@ -9,7 +9,7 @@ require('dotenv').config();
 // Initialize Express and MongoDB
 const app = express();
 const port = process.env.PORT || 3000;
-const connectionString = process.env.CONNECTION_STRING;
+const connectionString = 'mongodb+srv://samizaman:sami20563@cluster0.raoalwi.mongodb.net';
 let db;
 
 // Check if the connection string is defined in the environment variables
@@ -19,7 +19,7 @@ if (!connectionString) {
 }
 
 // Connect to MongoDB
-MongoClient.connect('mongodb+srv://samizaman:sami20563@cluster0.raoalwi.mongodb.net', { useUnifiedTopology: true }, (err, client) => {
+MongoClient.connect(connectionString, { useUnifiedTopology: true }, (err, client) => {
   if (err) {
     console.log('Error connecting to MongoDB:', err);
   } else {
