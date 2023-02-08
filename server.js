@@ -29,7 +29,7 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true }, (err, client
 });
 
 // Configure Express
-app.set('port', port);
+// app.set('port', port);
 
 // Use cors middleware
 app.use(cors());
