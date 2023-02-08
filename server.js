@@ -1,6 +1,7 @@
 // Import dependencies modules
 const express = require('express');
 const { MongoClient, ObjectID } = require('mongodb');
+const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
@@ -71,9 +72,22 @@ app.get('/collection/:collectionName', (req, res, next) => {
 // GET request to get a single image
 app.get('/images/:name', (req, res, next) => {
   try {
+    // Get the name of the image from the request parameters
     const name = req.params.name;
-    res.sendFile(path.join(__dirname, "public\\" + name))
+
+    // Join the directory and image name to form the file path
+    const file = path.join(__dirname, "public\\" + name)
+
+    // Check if the file exists in the specified directory
+    if (!fs.existsSync(file)) {
+      // Throw an error if the image file does not exist
+      throw new Error(`The image "${name}" does not exist`)
+    }
+
+    // Send the file to the client
+    res.sendFile(file)
   } catch (error) {
+    // Handle any errors that may occur and pass them to the next middleware
     next(error);
   }
 });
