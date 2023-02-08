@@ -8,7 +8,7 @@ require('dotenv').config();
 
 // Initialize Express and MongoDB
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const connectionString = process.env.CONNECTION_STRING;
 let db;
 
