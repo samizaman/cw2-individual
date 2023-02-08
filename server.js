@@ -12,6 +12,12 @@ const port = process.env.PORT;
 const connectionString = process.env.CONNECTION_STRING;
 let db;
 
+// Check if the connection string is defined in the environment variables
+if (!connectionString) {
+  console.error('The connection string is not defined in the environment variables');
+  return;
+}
+
 // Connect to MongoDB
 MongoClient.connect(connectionString, { useUnifiedTopology: true }, (err, client) => {
   if (err) {
@@ -34,11 +40,8 @@ app.use((req, res, next) => {
 });
 
 
-
 // Serve images
 app.use('/images', express.static(path.join(__dirname, '../images')));
-
-
 app.use((express.static("public")));
 
 
@@ -97,9 +100,9 @@ app.post('/collection/:collectionName', (req, res) => {
     lessons: req.body.lessons
   }, (error, result) => {
     if (error) {
-      return res.status(500).send({ success: false });
+      return res.status(500).send({ success: false, message: error.message });
     }
-    res.status(200).send({ success: true });
+    res.status(200).send({ success: true, message: 'Lesson added successfully' });
   });
 });
 
@@ -116,12 +119,15 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
       if (error) {
         return res.status(500).send(error);
       }
-      res.send(result);
+      if (result.modifiedCount === 1) {
+        res.send({ success: true });
+      } else {
+        res.send({ success: false });
+      }
     });
 });
 
 
-// GET request to search for a lesson
 // This is a GET route for searching a collection in the database.
 app.get("/collection/:collectionName/:search", (req, res, next) => {
   // The collection is found using the find() method with a search query. 
@@ -143,6 +149,7 @@ app.get("/collection/:collectionName/:search", (req, res, next) => {
     res.send(results);
   });
 });
+
 
 // Start the server
 app.listen(port, () => {
