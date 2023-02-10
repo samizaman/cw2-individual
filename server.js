@@ -13,10 +13,10 @@ const connectionString = 'mongodb+srv://samizaman:ruhvMFVK8tPjf9Pm@cluster0.raoa
 let db;
 
 // // Check if the connection string is defined in the environment variables
-// if (!connectionString) {
-//   console.error('The connection string is not defined in the environment variables');
-//   return;
-// }
+if (!connectionString) {
+  console.error('The connection string is not defined in the environment variables');
+  return;
+}
 
 // Connect to MongoDB
 MongoClient.connect(connectionString, { useUnifiedTopology: true }, (err, client) => {
@@ -29,7 +29,7 @@ MongoClient.connect(connectionString, { useUnifiedTopology: true }, (err, client
 });
 
 // Configure Express
-// app.set('port', port);
+app.set('port', port);
 
 // Use cors middleware
 app.use(cors());
