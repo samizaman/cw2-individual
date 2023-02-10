@@ -167,6 +167,13 @@ var vueInstance = new Vue({
     },
   },
   computed: {
+    totalPrice() {
+      let total = 0;
+      this.cart.forEach(lesson => {
+        total += lesson.price;
+      });
+      return total;
+    },
     validateCart() {
       return this.cart.length > 0;
     },
