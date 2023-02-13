@@ -1,0 +1,111 @@
+[{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed60"
+  },
+  "subject": "Art and Craft",
+  "image": "images/art.png",
+  "location": "Al Taawun, Sharjah",
+  "price": 1000,
+  "rating": 1,
+  "space": 4,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed61"
+  },
+  "subject": "Cooking",
+  "image": "images/cooking.png",
+  "location": "Gold 2 Towers, Dubai",
+  "price": 20,
+  "rating": 2,
+  "space": 2,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed62"
+  },
+  "subject": "Pottery",
+  "image": "images/pottery.png",
+  "location": "Knowledge Village, Dubai",
+  "price": 200,
+  "rating": 3,
+  "space": 3,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed63"
+  },
+  "subject": "Chess",
+  "image": "images/chess.png",
+  "location": "Jumeriah Lake, Dubai",
+  "price": 100,
+  "rating": 4,
+  "space": 3,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed64"
+  },
+  "subject": "Maths",
+  "image": "images/maths.png",
+  "location": "Zulekha Hospital, Dubai",
+  "price": 10000,
+  "rating": 5,
+  "space": 5,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed65"
+  },
+  "subject": "Robotics",
+  "image": "images/robotics.png",
+  "location": "One Tower, Dubai",
+  "price": 1600,
+  "rating": 5,
+  "space": 5,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed66"
+  },
+  "subject": "Coding",
+  "image": "images/coding.png",
+  "location": "Mubarak Center, Sharjah",
+  "price": 170,
+  "rating": 5,
+  "space": 5,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed67"
+  },
+  "subject": "Swimming",
+  "image": "images/swimming.png",
+  "location": "Rolla Square, Dubai",
+  "price": 1800,
+  "rating": 5,
+  "space": 5,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed68"
+  },
+  "subject": "Martial Arts",
+  "image": "images/martial-arts.png",
+  "location": "Town Square, Dubai",
+  "price": 190,
+  "rating": 5,
+  "space": 5,
+  "quantity": 1
+},{
+  "_id": {
+    "$oid": "63e37550b838afd0cf24ed69"
+  },
+  "subject": "Gymnastics",
+  "image": "images/gymnastics.png",
+  "location": "La Mer, Dubai",
+  "price": 10000,
+  "rating": 5,
+  "space": 4,
+  "quantity": 1
+}]
