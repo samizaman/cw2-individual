@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 const connectionString = 'mongodb+srv://samizaman:ruhvMFVK8tPjf9Pm@cluster0.raoalwi.mongodb.net';
 let db;
 
-// // Check if the connection string is defined in the environment variables
+// Check if the connection string is defined in the environment variables
 if (!connectionString) {
   console.error('The connection string is not defined in the environment variables');
   return;
@@ -39,11 +39,8 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Serve images
-app.use('/images', express.static(path.join(__dirname, '../images')));
 app.use((express.static("public")));
-
 
 // Param middleware
 app.param('collectionName', (req, res, next, collectionName) => {
