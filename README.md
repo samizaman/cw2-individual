@@ -5,7 +5,7 @@ A fictitious web app for Middlesex University (CST3145) that allows students and
 ## Links
 
 GitHub Repository: https://github.com/samizaman/cw2-individual <br>
-GitHub Pages: https://samizaman.github.io/cw2-individual/
+GitHub Pages: http://coach-env.eba-h2gqkwzp.us-east-1.elasticbeanstalk.com/
 
 ## Contributing
 
