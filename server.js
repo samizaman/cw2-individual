@@ -120,9 +120,9 @@ app.put("/collection/:collectionName/:id", (req, res, next) => {
         return res.status(500).send(error);
       }
       if (result.modifiedCount === 1) {
-        res.send({ success: true });
+        res.send({ success: true, message: "Lesson updated successfully" });
       } else {
-        res.send({ success: false });
+        res.send({ success: false, message: error.message });
       }
     });
 });
